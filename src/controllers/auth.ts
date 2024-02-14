@@ -12,6 +12,8 @@ import { sendEmail } from "../utils/emailsender";
 import { geneateOtp } from "../utils/otp.compose";
 import bcrypt from "bcrypt";
 import { successResponse } from "../response/successresponse";
+import EventEmitter  from "events";
+const emitter = new EventEmitter();
 
 export const signup = async (req: Request, res: Response) => {
   SignUpSchema.parse(req.body);
@@ -52,14 +54,25 @@ export const signup = async (req: Request, res: Response) => {
     },
   });
 
-  await sendEmail({
-    email: user.email,
-    subject: "Welcome to our app",
-    message: `Welcome to our app, ${user.name}, we are glad to have you!, you can now login to our app with your email and password., your otp is ${otp}`,
-  });
+  //without event emitter
+  // await sendEmail({
+  //   email: user.email,
+  //   subject: "Welcome to our app",
+  //   message: `Welcome to our app, ${user.name}, we are glad to have you!, you can now login to our app with your email and password., your otp is ${otp}`,
+  // });
+
+  emitter.emit("send-email", { email: user.email, name: user.name, otp });
 
   return res.json(user);
 };
+
+emitter.on("send-email", async (data: any) => {
+  await sendEmail({
+    email: data.email,
+    subject: "Welcome to our app",
+    message: `Welcome to our app, ${data.name}, we are glad to have you!, you can now login to our app with your email and password., your otp is ${data.otp}`,
+  });
+});
 
 export const login = async (req: Request, res: Response) => {
   LoginSchema.parse(req.body);
@@ -102,9 +115,7 @@ export const me = async (req: Request, res: Response) => {
 export const verifyOtp = async (req: Request, res: Response) => {
   otpSchema.parse(req.body);
   const { otp, email } = req.body;
-  console.log(otp);
 
-  //check if the email exists in the user table
   const user = await prismaClient.user.findFirst({
     where: {
       email,
