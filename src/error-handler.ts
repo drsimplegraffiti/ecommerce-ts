@@ -11,7 +11,7 @@ export const errorHandler = (method: Function) => {
     } catch (error: any) {
       let exception: HttpException;
       if (error instanceof HttpException) {
-        exception = error;
+        exception = error
       } else {
         if (error instanceof ZodError) {
           exception = new BadRequestsException(
@@ -21,7 +21,7 @@ export const errorHandler = (method: Function) => {
           );
         } else {
           exception = new InternalException(
-            "Something went wrong",
+            `Internal Server Error: ${error.message}`,
             error,
             ErrorCode.INTERNAL_ERROR
           );

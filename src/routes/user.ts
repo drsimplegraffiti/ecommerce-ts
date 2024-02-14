@@ -14,4 +14,6 @@ userRoutes.put("/userinfo", [authMiddleware], errorHandler(updateUser));
 userRoutes.get("/", [authMiddleware, adminMiddleware], errorHandler(listUsers));
 userRoutes.get("/:id", [authMiddleware, adminMiddleware], errorHandler(getUserSingleById));
 userRoutes.put("/:id", [authMiddleware, adminMiddleware], errorHandler(changeUserRole));
+
+
 export default userRoutes;

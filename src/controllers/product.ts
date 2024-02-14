@@ -129,3 +129,4 @@ export const fullTextSearch = async (req: Request, res: Response) => {
   return res.json(products);
 }
  
+
