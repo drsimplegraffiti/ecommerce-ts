@@ -43,24 +43,11 @@ export const prismaClient = new PrismaClient({
 
 });
 
-//show connection status
 prismaClient.$connect().then(() => {
   console.log("Database connected!");
 });
 
-// app.use(errorMiddleware);
-
-//4o4
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ message: "Not Found" });
-});
-
-//error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err);
-  res.status(500).json({ message: "Something went wrong: " + err.message });
-});
-
+app.use(errorMiddleware);
 
 const port: number = Number(PORT) || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));

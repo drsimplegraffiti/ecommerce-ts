@@ -19,13 +19,12 @@ export const uploadProfilePicture = async (req: Request, res: Response, next: Ne
     }
 
     const file = req.file;
-    const originalname = file!.originalname as string;
-    const filename = file!.filename as string;
     const path = file!.path as string;
-    const destination = file!.destination as string;
-    const size = file!.size as number;
-    const mimetype = file!.mimetype as string;
-    console.log({ originalname, filename, path, destination, size, mimetype });
+    // check if the user already has a profile picture and destroy from cloudinary
+    if (user.profilePicture) {
+        const publicId = user.profilePicture.split("/").pop()?.split(".")[0];
+        await cloudinary.uploader.destroy(publicId as string);
+    }
 
     const result = await cloudinary.uploader.upload(path, {
       folder: "profile",

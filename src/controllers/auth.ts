@@ -8,6 +8,7 @@ import { BadRequestsException } from "../exceptions/bad-request";
 import { UnprocessableEntity } from "../exceptions/validation";
 import { LoginSchema, SignUpSchema } from "../schema/user";
 import { NotFoundException } from "../exceptions/not-found";
+import { sendEmail } from "../utils/emailsender";
 
 export const signup = async (
   req: Request,
@@ -33,6 +34,12 @@ export const signup = async (
         name,
         password: hashSync(password, 10),
       },
+    });
+
+    await sendEmail({
+      email: user.email,
+      subject: "Welcome to our app",
+      message: "Welcome to our app",
     });
 
     return res.json(user);
