@@ -180,3 +180,17 @@ export const rawQuery = async (req: Request, res: Response) => {
   const products = await prismaClient.$queryRaw`SELECT * FROM products`;
   return successResponse(res, products, "Raw query executed");
 };
+
+// raw query with prisma with parameters
+export const rawQueryWithParams = async (req: Request, res: Response) => {
+  let q = req.query.q?.toString();
+  if (q) {
+    console.log(q);
+    // q = String(q);
+    const products = await prismaClient.$queryRaw`SELECT * FROM products WHERE name LIKE ${q}`;
+    return successResponse(res, products, "Raw query executed");
+  } else {
+    const products = await prismaClient.$queryRaw`SELECT * FROM products`;
+    return successResponse(res, products, "Raw query executed");
+  }
+};

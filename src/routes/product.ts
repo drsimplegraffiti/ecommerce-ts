@@ -9,6 +9,7 @@ import {
   getProducts,
   groupByPrice,
   rawQuery,
+  rawQueryWithParams,
   updateProduct,
 } from "../controllers/product";
 import authMiddleware from "../middlewares/auth";
@@ -56,6 +57,12 @@ productsRoutes.get(
   "/raw/query",
   [authMiddleware, adminMiddleware],
   errorHandler(rawQuery)
+);
+
+productsRoutes.get(
+  "/raw/query/with/params",
+  [authMiddleware, adminMiddleware],
+  errorHandler(rawQueryWithParams)
 );
 
 export default productsRoutes;
