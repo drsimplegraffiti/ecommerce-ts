@@ -12,7 +12,7 @@ import { sendEmail } from "../utils/emailsender";
 import { geneateOtp } from "../utils/otp.compose";
 import bcrypt from "bcrypt";
 import { successResponse } from "../response/successresponse";
-import EventEmitter  from "events";
+import EventEmitter from "events";
 const emitter = new EventEmitter();
 
 export const signup = async (req: Request, res: Response) => {
@@ -109,7 +109,21 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const me = async (req: Request, res: Response) => {
-  return res.json(req?.user);
+  // return res.json(req?.user);
+  const user = await prismaClient.user.findFirst({
+    where: {
+      id: req.user?.userId,
+    },
+    select: {
+      email: true,
+      name: true,
+      id: true,
+      role: true,
+    },
+    
+  });
+
+  return successResponse(res, user, "User details fetched successfully");
 };
 
 export const verifyOtp = async (req: Request, res: Response) => {
