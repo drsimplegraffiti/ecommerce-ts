@@ -49,3 +49,8 @@ export const UpdateUserSchema = z.object({
 export const changeUserRoleSchema = z.object({
   role: z.enum(["ADMIN", "USER"])
 });
+
+export const otpSchema = z.object({
+  otp: z.string().length(6),
+  email: z.string().email()
+});

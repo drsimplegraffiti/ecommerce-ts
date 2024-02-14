@@ -6,9 +6,12 @@ import { JWT_EXPIRATION, JWT_SECRET } from "../secrets";
 import { ErrorCode } from "../exceptions/root";
 import { BadRequestsException } from "../exceptions/bad-request";
 import { UnprocessableEntity } from "../exceptions/validation";
-import { LoginSchema, SignUpSchema } from "../schema/user";
+import { LoginSchema, SignUpSchema, otpSchema } from "../schema/user";
 import { NotFoundException } from "../exceptions/not-found";
 import { sendEmail } from "../utils/emailsender";
+import { geneateOtp } from "../utils/otp.compose";
+import bcrypt from "bcrypt";
+import { successResponse } from "../response/successresponse";
 
 export const signup = async (req: Request, res: Response) => {
   SignUpSchema.parse(req.body);
@@ -40,10 +43,19 @@ export const signup = async (req: Request, res: Response) => {
     );
   }
 
+  let otp = geneateOtp(6);
+
+  await prismaClient.otp.create({
+    data: {
+      otp: bcrypt.hashSync(otp, 10),
+      email: user.email,
+    },
+  });
+
   await sendEmail({
     email: user.email,
     subject: "Welcome to our app",
-    message: `Welcome to our app, ${user.name}, we are glad to have you!, you can now login to our app with your email and password.`,
+    message: `Welcome to our app, ${user.name}, we are glad to have you!, you can now login to our app with your email and password., your otp is ${otp}`,
   });
 
   return res.json(user);
@@ -85,4 +97,56 @@ export const login = async (req: Request, res: Response) => {
 
 export const me = async (req: Request, res: Response) => {
   return res.json(req?.user);
+};
+
+export const verifyOtp = async (req: Request, res: Response) => {
+  otpSchema.parse(req.body);
+  const { otp, email } = req.body;
+  console.log(otp);
+
+  //check if the email exists in the user table
+  const user = await prismaClient.user.findFirst({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    throw new NotFoundException("User not found", ErrorCode.USER_NOT_FOUND);
+  }
+
+  //check if the otp exists in the otp table
+  const userOtpData = await prismaClient.otp.findFirst({
+    where: {
+      email,
+    },
+  });
+
+  if (!userOtpData) {
+    throw new NotFoundException("Otp not found", ErrorCode.OTP_NOT_FOUND);
+  }
+
+  //compare the otp
+  const isOtpValid = compareSync(otp, userOtpData.otp);
+  if (!isOtpValid) {
+    throw new BadRequestsException("Invalid otp", ErrorCode.INVALID_OTP);
+  }
+
+  await prismaClient.user.update({
+    where: {
+      email,
+    },
+    data: {
+      isVerified: true,
+    },
+  });
+
+  //delete the otp from the otp table
+  await prismaClient.otp.delete({
+    where: {
+      email,
+    },
+  });
+
+  return successResponse(res, null, "User verified successfully");
 };

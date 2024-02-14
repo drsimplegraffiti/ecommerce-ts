@@ -241,3 +241,17 @@ export const changeUserRole = async (req: Request, res: Response) => {
 
   return successResponse(res, updatedUser, "User role updated successfully");
 };
+
+
+// dashboard overview of users, products, orders
+export const dashboardOverview = async (req: Request, res: Response) => {
+  try {
+    const users = await prismaClient.user.count();
+    const products = await prismaClient.product.count();
+    const orders = await prismaClient.order.count();
+
+    return successResponse(res, { users, products, orders }, "Dashboard overview fetched successfully");
+  } catch (error) {
+    throw new NotFoundException("Dashboard overview not found", ErrorCode.DASHBOARD_OVERVIEW_NOT_FOUND);
+  }
+};

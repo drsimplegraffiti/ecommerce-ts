@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FROM_NAME = exports.USER_EMAIL_PASSWORD = exports.USER_EMAIL = exports.SMTP_PASSWORD = exports.SMTP_USER = exports.SMTP_PORT = exports.SMTP_HOST = exports.CLOUDINARY_API_SECRET = exports.CLOUDINARY_API_KEY = exports.CLOUDINARY_NAME = exports.JWT_EXPIRATION = exports.JWT_SECRET = exports.PORT = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config({ path: ".env" });
+exports.PORT = process.env.PORT;
+exports.JWT_SECRET = process.env.JWT_SECRET;
+exports.JWT_EXPIRATION = process.env.JWT_EXPIRATION;
+exports.CLOUDINARY_NAME = process.env.CLOUDINARY_NAME;
+exports.CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
+exports.CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
+exports.SMTP_HOST = process.env.SMTP_HOST;
+exports.SMTP_PORT = process.env.SMTP_PORT;
+exports.SMTP_USER = process.env.SMTP_USER;
+exports.SMTP_PASSWORD = process.env.SMTP_PASSWORD;
+exports.USER_EMAIL = process.env.USER_EMAIL;
+exports.USER_EMAIL_PASSWORD = process.env.USER_EMAIL_PASSWORD;
+exports.FROM_NAME = process.env.FROM_NAME;

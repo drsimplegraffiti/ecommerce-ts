@@ -98,3 +98,56 @@ This will create a `migrations` folder with the migration file and also create t
 
 #### go to prisma studio
 - npx prisma studio
+
+
+#### Seed the database with some data using the `seed.ts` file
+```ts
+import { prismaClient } from "..";
+
+
+//seed data
+const seedData = async () => {
+    for (let i = 0; i < 10; i++) {
+        
+   await prismaClient.user.create({
+        data: {
+            email: `user-${i + 10}-one@yopmail.com`,
+            name: `user-${i + 10}-one`,
+            password: "password",
+        },
+    });
+    }
+}
+
+seedData().then(() => {
+    console.log("seeded data");
+    process.exit(0); //exit the process after seeding data, 0 means success
+}
+).catch((error) => {
+    console.log(error);
+    process.exit(1); //exit the process after seeding data, 1 means failure
+});
+
+```
+
+#### Run the seed file steps
+Steps to run the seed file
+ 1. Run the build command to convert the typescript to javascript
+ npm run build
+ 2. Run the seed command to seed the data
+ node build/utils/seed.js
+
+Or run npm run seed to run the seed command in the package.json file
+```json
+ {
+     "scripts": {
+         "seed": "ts-node --transpile-only ./src/utils/seed.ts"
+     }
+
+ }
+```
+
+remove all .js file usin bash command
+- rm -rf src/**/*.js
+
+

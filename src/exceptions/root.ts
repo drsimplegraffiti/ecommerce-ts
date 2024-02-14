@@ -48,6 +48,10 @@ export class HttpException extends Error {
 // }
 
 export enum ErrorCode {
+  OTP_NOT_FOUND = 1000,
+  INVALID_OTP = 1000,
+  DASHBOARD_OVERVIEW_NOT_FOUND = 6000,
+  FILE_TOO_LARGE = 413, // Payload Too Large
   BAD_REQUEST = 400, // Bad Request
   INVALID_FILE_UPLOAD = 400, // Unprocessable Entity
   ROLE_ALREADY_SAME = 400, // Bad Request

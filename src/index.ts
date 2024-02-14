@@ -1,6 +1,7 @@
 import express, { Express, NextFunction, Request, Response } from "express"; // this will enable autocompletion for express and types for req and res
 import { PORT } from "./secrets";
 import rootRouter from "./routes";
+import morgan from "morgan";
 
 //initialize prisma client
 import { PrismaClient } from "@prisma/client";
@@ -8,6 +9,7 @@ import { errorMiddleware } from "./middlewares/errors";
 
 const app: Express = express();
 
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 

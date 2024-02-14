@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { errorHandler } from "../error-handler";
 import authMiddleware from "../middlewares/auth";
-import { addAddress, changeUserRole, deleteAddress, getUserSingleById, listAddresses, listUsers, updateUser } from "../controllers/user";
+import { addAddress, changeUserRole, dashboardOverview, deleteAddress, getUserSingleById, listAddresses, listUsers, updateUser } from "../controllers/user";
 import adminMiddleware from "../middlewares/admin";
 
 const userRoutes: Router = Router();
@@ -15,5 +15,7 @@ userRoutes.get("/", [authMiddleware, adminMiddleware], errorHandler(listUsers));
 userRoutes.get("/:id", [authMiddleware, adminMiddleware], errorHandler(getUserSingleById));
 userRoutes.put("/:id", [authMiddleware, adminMiddleware], errorHandler(changeUserRole));
 
+
+userRoutes.get("/dashboard/overview", [authMiddleware, adminMiddleware], errorHandler(dashboardOverview));
 
 export default userRoutes;

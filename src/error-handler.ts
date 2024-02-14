@@ -11,13 +11,18 @@ export const errorHandler = (method: Function) => {
     } catch (error: any) {
       let exception: HttpException;
       if (error instanceof HttpException) {
-        exception = error
+        exception = error;
       } else {
         if (error instanceof ZodError) {
           exception = new BadRequestsException(
             "Unprocessable Entity",
             ErrorCode.UNPROCESSABLE_ENTITY,
             error.errors
+          );
+        } else if (error.code === "LIMIT_FILE_SIZE") {
+          exception = new BadRequestsException(
+            "File size too large",
+            ErrorCode.FILE_TOO_LARGE
           );
         } else {
           exception = new InternalException(

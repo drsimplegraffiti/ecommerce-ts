@@ -24,6 +24,16 @@ enum OrderEventStatus {
   CANCELLED
 }
 
+model Otp {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  otp       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("otp")
+}
+
 model User {
   id       Int      @id @default(autoincrement())
   email    String   @unique
@@ -33,6 +43,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   profilePicture String?
+
+  isVerified Boolean @default(false)
 
   defaultShippingAddress Int?
   defaultBillingAddress Int?
