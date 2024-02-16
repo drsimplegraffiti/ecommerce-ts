@@ -174,7 +174,6 @@ export const groupByPrice = async (req: Request, res: Response) => {
   return successResponse(res, products, "Grouped by price");
 };
 
-
 // use raw query with prisma
 export const rawQuery = async (req: Request, res: Response) => {
   const products = await prismaClient.$queryRaw`SELECT * FROM products`;
@@ -187,10 +186,46 @@ export const rawQueryWithParams = async (req: Request, res: Response) => {
   if (q) {
     console.log(q);
     // q = String(q);
-    const products = await prismaClient.$queryRaw`SELECT * FROM products WHERE name LIKE ${q}`;
+    const products =
+      await prismaClient.$queryRaw`SELECT * FROM products WHERE name LIKE ${q}`;
     return successResponse(res, products, "Raw query executed");
   } else {
     const products = await prismaClient.$queryRaw`SELECT * FROM products`;
     return successResponse(res, products, "Raw query executed");
+  }
+};
+
+export const createWithRawQuery = async (req: Request, res: Response) => {
+  try {
+    const { name, price, description, tags } = req.body;
+
+    // Validate request body
+    if (!name || !price || !description || !tags) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Serialize tags array into a string
+    const tagsString = JSON.stringify(tags);
+
+    // Execute raw query to create product
+    const result = await prismaClient.$executeRaw`
+      INSERT INTO products (name, price, description, tags, createdAt, updatedAt)
+      VALUES (${name}, ${price}, ${description}, ${tagsString}, NOW(), NOW()) 
+    `;
+    console.log("result", result);
+
+    //get the newly created product
+    const newProduct = await prismaClient.product.findFirst({
+      where: {
+        name,
+        price,
+        description,
+      },
+    });
+
+   return successResponse(res, newProduct, "Product created successfully");
+  } catch (error) {
+    console.error("Error creating product:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

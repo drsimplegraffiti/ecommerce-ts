@@ -1,19 +1,16 @@
-import Express, { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { prismaClient } from "..";
 import { hashSync, compareSync } from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { JWT_EXPIRATION, JWT_SECRET } from "../secrets";
 import { ErrorCode } from "../exceptions/root";
 import { BadRequestsException } from "../exceptions/bad-request";
-import { UnprocessableEntity } from "../exceptions/validation";
 import { LoginSchema, SignUpSchema, otpSchema } from "../schema/user";
 import { NotFoundException } from "../exceptions/not-found";
-import { sendEmail } from "../utils/emailsender";
 import { geneateOtp } from "../utils/otp.compose";
 import bcrypt from "bcrypt";
 import { successResponse } from "../response/successresponse";
-import EventEmitter from "events";
-const emitter = new EventEmitter();
+import {emitter} from "../services/email.service";
 
 export const signup = async (req: Request, res: Response) => {
   SignUpSchema.parse(req.body);
@@ -25,7 +22,6 @@ export const signup = async (req: Request, res: Response) => {
   });
   try {
     if (user?.email === email) {
-      // throw new Error("User already exists!");
       new BadRequestsException(
         "User already exists!",
         ErrorCode.USER_ALREADY_EXISTS
@@ -54,7 +50,7 @@ export const signup = async (req: Request, res: Response) => {
     },
   });
 
-  //without event emitter
+  // without event emitter
   // await sendEmail({
   //   email: user.email,
   //   subject: "Welcome to our app",
@@ -62,17 +58,16 @@ export const signup = async (req: Request, res: Response) => {
   // });
 
   emitter.emit("send-email", { email: user.email, name: user.name, otp });
-
   return res.json(user);
 };
 
-emitter.on("send-email", async (data: any) => {
-  await sendEmail({
-    email: data.email,
-    subject: "Welcome to our app",
-    message: `Welcome to our app, ${data.name}, we are glad to have you!, you can now login to our app with your email and password., your otp is ${data.otp}`,
-  });
-});
+// emitter.on("send-email", async (data: any) => {
+//   await sendEmail({
+//     email: data.email,
+//     subject: "Welcome to our app",
+//     message: `Welcome to our app, ${data.name}, we are glad to have you!, you can now login to our app with your email and password., your otp is ${data.otp}`,
+//   });
+// });
 
 export const login = async (req: Request, res: Response) => {
   LoginSchema.parse(req.body);

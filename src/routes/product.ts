@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   aggregateTotalPrice,
   createProduct,
+  createWithRawQuery,
   deleteProduct,
   fullTextSearch,
   getProductById,
@@ -63,6 +64,12 @@ productsRoutes.get(
   "/raw/query/with/params",
   [authMiddleware, adminMiddleware],
   errorHandler(rawQueryWithParams)
+);
+
+productsRoutes.post(
+  "/create/with/raw/query",
+  [authMiddleware, adminMiddleware],
+  errorHandler(createWithRawQuery)
 );
 
 export default productsRoutes;
